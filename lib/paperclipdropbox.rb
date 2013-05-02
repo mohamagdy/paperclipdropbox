@@ -45,7 +45,7 @@ module Paperclip
 					log("[paperclip] Writing files for ") if respond_to?(:log)
 					# Error --> undefined method close for #<Paperclip::
 					# file.close
-					dropbox_client.put_file(file.path, "/Public#{File.dirname(path(style))}", :as=> File.basename(path(style)))
+					dropbox_client.put_file("/Public#{File.dirname(path(style))}", file)
 				end
 				@queued_for_write = {}
 			end
@@ -81,7 +81,6 @@ module Paperclip
 							credentials = YAML::load(File.read("#{Rails.root}/config/dropboxsession.yml"))
 
 							session = DropboxSession.new(credentials[0], credentials[1])
-							access_token, access_token_secret = 
 							session.set_access_token(credentials[3], credentials[4])
 							@dropbox_client = DropboxClient.new(session, credentials.last)
 						end
