@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "paperclipdropbox"
   
   s.add_dependency 'paperclip'
-  s.add_dependency 'dropbox'
+  s.add_dependency 'dropbox-sdk'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")

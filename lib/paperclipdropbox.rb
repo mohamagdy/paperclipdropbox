@@ -8,7 +8,7 @@ module Paperclip
     extend self
     
 			def self.extended(base)
-				require "dropbox"
+				require "dropbox-sdk"
 				base.instance_eval do
 					
 					@dropbox_key = @options[:dropbox_key] || '8ti7qntpcysl91j'
@@ -64,8 +64,8 @@ module Paperclip
 			def user_id
 				unless Rails.cache.exist?('DropboxSession:uid')
 					log("get Dropbox Session User_id")
-					Rails.cache.write('DropboxSession:uid', dropbox_session.account.uid)
-					dropbox_session.account.uid
+					Rails.cache.write('DropboxSession:uid', dropbox_session.account_info.uid)
+					dropbox_session.account_info.uid
 				else
 					log("read Dropbox User_id") if respond_to?(:log)
 					Rails.cache.read('DropboxSession:uid')
@@ -74,13 +74,14 @@ module Paperclip
 
 			def dropbox_session
 				unless Rails.cache.exist?('DropboxSession')
+					require 'yaml'
 					if @dropboxsession.blank?
 						log("loading session from yaml") if respond_to?(:log)
 						if File.exists?("#{Rails.root}/config/dropboxsession.yml")
-							@dropboxsession = Dropbox::Session.deserialize(File.read("#{Rails.root}/config/dropboxsession.yml"))
+							session, access_type = YAML::load(File.read("#{Rails.root}/config/dropboxsession.yml"))[3..4]
+							@dropboxsession = DropboxClient.new(session, access_type)
 						end
 					end
-					@dropboxsession.mode = :dropbox unless @dropboxsession.blank?
 					@dropboxsession
 				else
 					log("reading Dropbox Session") if respond_to?(:log)
