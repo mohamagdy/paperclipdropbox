@@ -13,9 +13,9 @@ namespace :paperclipdropbox do
 		puts ""
 		puts ""
 
-		@dropboxsession = Paperclip::Storage::Dropboxstorage.dropbox_session
+		@dropbox_client = Paperclip::Storage::Dropboxstorage.dropbox_session
 
-		if @dropboxsession.blank?
+		if @dropbox_client.blank?
 			if File.exists?("#{Rails.root}/config/paperclipdropbox.yml")
 				@options = (YAML.load_file("#{Rails.root}/config/paperclipdropbox.yml")[Rails.env].symbolize_keys)
 			end
@@ -23,40 +23,40 @@ namespace :paperclipdropbox do
 			@dropbox_key = @options.blank? ? '8ti7qntpcysl91j' : @options[:dropbox_key]
 			@dropbox_secret = @options.blank? ? 'i0tshr4cpd1pa4e' : @options[:dropbox_secret]
 
-			@dropboxsession = DropboxSession.new(@dropbox_key, @dropbox_secret)
-			@dropboxsession.get_request_token
+			@dropbox_client = DropboxSession.new(@dropbox_key, @dropbox_secret)
+			@dropbox_client.get_request_token
 			
-			puts "Visit #{@dropboxsession.get_authorize_url} to log in to Dropbox. Hit enter when you have done this."
+			puts "Visit #{@dropbox_client.get_authorize_url} to log in to Dropbox. Hit enter when you have done this."
 
 			STDIN.gets
 
 		end
 
 		begin
-			@dropboxsession.get_access_token
+			@dropbox_client.get_access_token
 			puts ""
-			puts "Authorized - #{@dropboxsession.authorized?}"
+			puts "Authorized - #{@dropbox_client.authorized?}"
 		rescue
 			begin
 				puts ""
-				puts "Visit #{@dropboxsession.get_authorize_url} to log in to Dropbox. Hit enter when you have done this."
+				puts "Visit #{@dropbox_client.get_authorize_url} to log in to Dropbox. Hit enter when you have done this."
 
 				STDIN.gets
-				@dropboxsession.authorize
+				@dropbox_client.authorize
 				puts ""
-				puts "Authorized - #{@dropboxsession.authorized?}"
+				puts "Authorized - #{@dropbox_client.authorized?}"
 			rescue
 				puts ""
-				puts "Already Authorized - #{@dropboxsession.authorized?}" unless @dropboxsession.blank?
-				puts "Failed Authorization. Please try delete /config/dropboxsession.yml and try again." if @dropboxsession.blank?
+				puts "Already Authorized - #{@dropbox_client.authorized?}" unless @dropbox_client.blank?
+				puts "Failed Authorization. Please try delete /config/dropboxsession.yml and try again." if @dropbox_client.blank?
 			end
 		end
 
 		puts ""
 		puts ""
-		unless @dropboxsession.blank?
+		unless @dropbox_client.blank?
 			File.open(SESSION_FILE, "w") do |f|
-				f.puts @dropboxsession.serialize
+				f.puts @dropbox_client.serialize
 			end
 		end
 	end

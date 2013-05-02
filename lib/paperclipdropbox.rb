@@ -75,14 +75,18 @@ module Paperclip
 			def dropbox_session
 				unless Rails.cache.exist?('DropboxSession')
 					require 'yaml'
-					if @dropboxsession.blank?
+					if @dropbox_client.blank?
 						log("loading session from yaml") if respond_to?(:log)
 						if File.exists?("#{Rails.root}/config/dropboxsession.yml")
-							session, access_type = YAML::load(File.read("#{Rails.root}/config/dropboxsession.yml"))[3..4]
-							@dropboxsession = DropboxClient.new(session, access_type)
+							credentials = YAML::load(File.read("#{Rails.root}/config/dropboxsession.yml"))
+
+							session = DropboxSession.new(credentials[0], credentials[1])
+							access_token, access_token_secret = 
+							session.set_access_token(credentials[3], credentials[4])
+							@dropbox_client = DropboxClient.new(session, access_type)
 						end
 					end
-					@dropboxsession
+					@dropbox_client
 				else
 					log("reading Dropbox Session") if respond_to?(:log)
 					Rails.cache.read('DropboxSession')
