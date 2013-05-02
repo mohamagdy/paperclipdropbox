@@ -62,7 +62,7 @@ module Paperclip
 			def user_id
 				unless Rails.cache.exist?('DropboxSession:uid')
 					log("get Dropbox Session User_id")
-					Rails.cache.write('DropboxSession:uid', dropbox_client.account_info.uid)
+					Rails.cache.write('DropboxSession:uid', dropbox_client.account_info['uid'])
 					dropbox_client.account_info['uid']
 				else
 					log("read Dropbox User_id") if respond_to?(:log)
