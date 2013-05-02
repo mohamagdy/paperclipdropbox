@@ -1,5 +1,5 @@
 require "yaml"
-require "dropbox-sdk"
+require "dropbox_sdk"
 
 namespace :paperclipdropbox do
 

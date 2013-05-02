@@ -8,7 +8,7 @@ module Paperclip
     extend self
     
 			def self.extended(base)
-				require "dropbox-sdk"
+				require "dropbox_sdk"
 				base.instance_eval do
 					
 					@dropbox_key = @options[:dropbox_key] || '8ti7qntpcysl91j'
