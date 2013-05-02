@@ -13,7 +13,7 @@ namespace :paperclipdropbox do
 		puts ""
 		puts ""
 
-		@dropbox_client = Paperclip::Storage::Dropboxstorage.dropbox_session
+		@dropbox_client = Paperclip::Storage::Dropboxstorage.dropbox_client
 
 		if @dropbox_client.blank?
 			if File.exists?("#{Rails.root}/config/paperclipdropbox.yml")
@@ -25,7 +25,7 @@ namespace :paperclipdropbox do
 
 			@dropbox_client = DropboxSession.new(@dropbox_key, @dropbox_secret)
 			@dropbox_client.get_request_token
-			
+
 			puts "Visit #{@dropbox_client.get_authorize_url} to log in to Dropbox. Hit enter when you have done this."
 
 			STDIN.gets

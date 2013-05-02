@@ -25,7 +25,7 @@ module Paperclip
 			def exists?(style = default_style)
 				log("exists?  #{style}") if respond_to?(:log)
 				begin
-					dropbox_session.metadata("/Public#{File.dirname(path(style))}")
+					dropbox_client.metadata("/Public#{File.dirname(path(style))}")
 					log("true") if respond_to?(:log)
 					true
 				rescue
@@ -45,7 +45,7 @@ module Paperclip
 					log("[paperclip] Writing files for ") if respond_to?(:log)
 					# Error --> undefined method close for #<Paperclip::
 					# file.close
-					dropbox_session.upload(file.path, "/Public#{File.dirname(path(style))}", :as=> File.basename(path(style)))
+					dropbox_client.put_file(file.path, "/Public#{File.dirname(path(style))}", :as=> File.basename(path(style)))
 				end
 				@queued_for_write = {}
 			end
@@ -54,7 +54,7 @@ module Paperclip
 				@queued_for_delete.each do |path|
 					log("[paperclip] Deleting files for #{path}") if respond_to?(:log)
 					begin
-						dropbox_session.rm("/Public/#{path}")
+						dropbox_client.rm("/Public/#{path}")
 					rescue
 					end
 				end
@@ -64,15 +64,15 @@ module Paperclip
 			def user_id
 				unless Rails.cache.exist?('DropboxSession:uid')
 					log("get Dropbox Session User_id")
-					Rails.cache.write('DropboxSession:uid', dropbox_session.account_info.uid)
-					dropbox_session.account_info.uid
+					Rails.cache.write('DropboxSession:uid', dropbox_client.account_info.uid)
+					dropbox_client.account_info.uid
 				else
 					log("read Dropbox User_id") if respond_to?(:log)
 					Rails.cache.read('DropboxSession:uid')
 				end
 			end
 
-			def dropbox_session
+			def dropbox_client
 				unless Rails.cache.exist?('DropboxSession')
 					require 'yaml'
 					if @dropbox_client.blank?
