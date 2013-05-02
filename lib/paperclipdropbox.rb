@@ -43,9 +43,7 @@ module Paperclip
 				log("[paperclip] Writing files #{@queued_for_write.count}")
 				@queued_for_write.each do |style, file|
 					log("[paperclip] Writing files for ") if respond_to?(:log)
-					# Error --> undefined method close for #<Paperclip::
-					# file.close
-					dropbox_client.put_file("/Public#{File.dirname(path(style))}/#{File.basename(path(style))}", file.path)
+					dropbox_client.put_file("/Public#{File.dirname(path(style))}/#{File.basename(path(style))}", File.open(file.path))
 				end
 				@queued_for_write = {}
 			end
