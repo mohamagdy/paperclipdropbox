@@ -70,6 +70,12 @@ module Paperclip
 				end
 			end
 
+			def copy_to_local_file(style, destination_path)
+			  local_file = File.open(destination_path, "wb")
+			  local_file.write(dropbox_client.get_file(path(style)))
+			  local_file.close
+			end
+
 			def dropbox_client
 				unless Rails.cache.exist?('DropboxSession')
 					require 'yaml'
